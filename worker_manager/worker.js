@@ -8,9 +8,6 @@ onmessage = function(data) {
   if (data.beezeenodeworkermanagersetfile == 'beezeenodeworkermanagersetfile') {
     worker.setFile(data.file);
   }
-  worker.app[data.data.method].apply(worker.app, [JSON.parse(data.data.params)]);
-}
-
-function returnToParent(data) {
-    postMessage(JSON.stringify(data));
+  var result = worker.app[data.data.method].apply(worker.app, [JSON.parse(data.data.params)]);
+  if (result) { if (data.nwmEachFlag) result.nwmEachFlag = data.nwmEachFlag; postMessage(JSON.stringify(result)); }
 }
