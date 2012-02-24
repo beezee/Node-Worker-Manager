@@ -26,7 +26,7 @@ function managedWorker(handle, file) {
     this.worker.postMessage(JSON.stringify(data));
     this.worker.onmessage = function(dataStr) {
         var data = JSON.parse(dataStr.data);
-        if (!data.nwmEachFlag) {exports.methods[data.data.method].apply(exports.methods, [data]); return;}
+        if (!data.nwmEachFlag) {exports.methods[data.method].apply(exports.methods, [data.params]); return;}
         eachCache[data.nwmEachFlag][self.handle] = data.params;
         if (getSize(eachCache[data.nwmEachFlag]) === getSize(exports.workers)) {
             exports.methods[data.method].apply(exports.methods, [eachCache[data.nwmEachFlag]]);
@@ -49,6 +49,13 @@ exports.add = function(data) {
         exports.workers[count] = new managedWorker(count);
         return count;
     } else {exports.workers[data.key] = new managedWorker(data.key, data.file);}
+}
+
+exports.remove = function(key) {
+    console.log(exports.workers[key])
+    //exports.workers[key].worker.terminate(1);
+    //delete(exports.workers[key]);
+  //  console.log(exports.workers[key].worker.pid);
 }
 
 exports.each = function(method, params) {
