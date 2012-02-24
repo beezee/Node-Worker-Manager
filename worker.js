@@ -11,8 +11,12 @@ onmessage = function(dataString) {
     return;
   }
   var args = (data.params) ? data.params : [];
-  var result = worker.app[data.method].apply(worker.app, args);
-  if (result) { if (data.nwmEachFlag) result.nwmEachFlag = data.nwmEachFlag; postMessage(JSON.stringify(result)); }
+  var result = worker.app[data.method].apply(worker.app, [args]);
+  if (result) {
+    if (data.nwmEachFlag) result.nwmEachFlag = data.nwmEachFlag;
+    if (args.callback) result.method = args.callback;
+    postMessage(JSON.stringify(result));
+    }
 };
 
 onerror = function(e) {

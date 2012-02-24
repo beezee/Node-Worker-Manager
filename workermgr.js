@@ -18,6 +18,7 @@ function getSize(obj) {
 };
 
 function managedWorker(handle, file) {
+    var self = this;
     this.handle = handle;
     this.file = file;
     this.worker = new Worker(__dirname + '/worker.js');
@@ -26,13 +27,10 @@ function managedWorker(handle, file) {
     this.worker.onmessage = function(dataStr) {
         var data = JSON.parse(dataStr.data);
         if (!data.nwmEachFlag) {exports.methods[data.data.method].apply(exports.methods, [data]); return;}
-        eachCache[data.nwmEachFlag][this.handle] = data.params;
-        console.log(eachCache[data.nwmEachFlag]);
-        if (getSize(eachCache[data.nwmEachFlag]) === getSize(exports.workers))
-        console.log(getSize(eachCache[data.nwmEachFlag]));
-        console.log('duh');
-        console.log(getSize(exports.workers));
-            exports.methods[data.method].apply(exports.methods, [data]);
+        eachCache[data.nwmEachFlag][self.handle] = data.params;
+        if (getSize(eachCache[data.nwmEachFlag]) === getSize(exports.workers)) {
+            exports.methods[data.method].apply(exports.methods, [eachCache[data.nwmEachFlag]]);
+        }
       };
     this.worker.onerror = function(e) {
         console.log(e.stack);

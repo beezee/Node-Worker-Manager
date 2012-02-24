@@ -1,3 +1,3 @@
 exports.sayHi = function() {
-    return {method: 'sayHi', params:'larry'};
+    return {method: 'sayHi', params:['larry']};
 }
