@@ -4,10 +4,17 @@ worker.setFile = function(file) {
     worker.app = require(file);
 }
 
-onmessage = function(data) {
+onmessage = function(dataString) {
+  var data = JSON.parse(dataString.data);
   if (data.beezeenodeworkermanagersetfile == 'beezeenodeworkermanagersetfile') {
     worker.setFile(data.file);
+    return;
   }
-  var result = worker.app[data.data.method].apply(worker.app, [JSON.parse(data.data.params)]);
+  var args = (data.params) ? data.params : [];
+  var result = worker.app[data.method].apply(worker.app, args);
   if (result) { if (data.nwmEachFlag) result.nwmEachFlag = data.nwmEachFlag; postMessage(JSON.stringify(result)); }
+};
+
+onerror = function(e) {
+    console.log(e.stack);
 }
